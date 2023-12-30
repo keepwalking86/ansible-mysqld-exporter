@@ -1,0 +1,4 @@
+[mysql]
+    db-node01
+    db-node02
+    db-node03

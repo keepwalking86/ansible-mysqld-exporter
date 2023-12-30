@@ -1,0 +1,7 @@
+---
+    #Config mysql_exporter
+    mysqld_exporter_version: 0.15.0
+    mysql_user: changeme
+    mysql_password: changeme
+    mysqld_exporter_user: prometheus
+    mysqld_exporter_group: prometheus

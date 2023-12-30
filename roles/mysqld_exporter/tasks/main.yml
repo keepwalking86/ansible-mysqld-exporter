@@ -1,0 +1,39 @@
+---
+- name: Ensure required packages are installed
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - unzip
+    - wget
+- name: Download and extract MySQL Exporter
+  get_url:
+    url: "https://github.com/prometheus/mysqld_exporter/releases/download/v{{ mysqld_exporter_version }}/mysqld_exporter-{{ mysqld_exporter_version }}.linux-amd64.tar.gz"
+    dest: "/tmp/mysqld_exporter.tar.gz"
+    mode: '0644'
+
+- name: Extract mysqld exporter archive
+  ansible.builtin.unarchive:
+    src: "/tmp/mysqld_exporter.tar.gz"
+    dest: "/opt"
+    remote_src: true
+    owner: prometheus
+    group: prometheus
+    mode: '0755'
+
+- name: make directory
+  file: path=/etc/mysqld_exporter/ state=directory
+
+- name: Store mysqld_exporter account
+  template:
+    src: my.cnf.j2
+    dest: /etc/mysqld_exporter/.my.cnf
+    owner: prometheus
+    group: prometheus
+    mode: '0600'
+
+- name: Create systemd service for mysqld exporter
+  template:
+    src: "mysqld_exporter.service.j2"
+    dest: "/usr/lib/systemd/system/mysqld_exporter.service"
+  notify: restart mysqld exporter
